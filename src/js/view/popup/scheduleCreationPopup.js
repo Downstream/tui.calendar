@@ -153,6 +153,9 @@ ScheduleCreationPopup.prototype._closeDropdownMenuView = function(dropdown) {
  * @param {HTMLElement} dropdown - dropdown element that has a closed dropdown menu
  */
 ScheduleCreationPopup.prototype._openDropdownMenuView = function(dropdown) {
+    if (this._focusedDropdown) {
+        this._closeDropdownMenuView(this._focusedDropdown);
+    }
     domutil.addClass(dropdown, config.classname('open'));
     this._focusedDropdown = dropdown;
 };
@@ -163,18 +166,27 @@ ScheduleCreationPopup.prototype._openDropdownMenuView = function(dropdown) {
  * @returns {boolean} whether
  */
 ScheduleCreationPopup.prototype._selectDropdownMenuItem = function(target) {
+    var cssPrefix = config.cssPrefix;
     var itemClassName = config.classname('dropdown-menu-item');
     var iconClassName = config.classname('icon');
     var contentClassName = config.classname('content');
     var selectedItem = domutil.hasClass(target, itemClassName) ? target : domutil.closest(target, '.' + itemClassName);
     var bgColor, title, dropdown, dropdownBtn;
+    var bgElement = domutil.find('.' + iconClassName, selectedItem);
+    var titleElement = domutil.find('.' + contentClassName, selectedItem);
+    var show = 'display:inline-block';
+    var hide = 'display:none';
+    var typeListElement = domutil.get('type-list');
+    var typeListElementChildren = Array.from(typeListElement.children);
+    var liElement;
+    var spanElement;
 
     if (!selectedItem) {
         return false;
     }
 
-    bgColor = domutil.find('.' + iconClassName, selectedItem).style.backgroundColor || 'transparent';
-    title = domutil.find('.' + contentClassName, selectedItem).innerHTML;
+    bgColor = bgElement ? bgElement.style.backgroundColor || 'transparent' : 'transparent';
+    title = titleElement ? titleElement.innerHTML : '';
 
     dropdown = domutil.closest(selectedItem, config.classname('.dropdown'));
     dropdownBtn = domutil.find(config.classname('.dropdown-button'), dropdown);
@@ -184,6 +196,43 @@ ScheduleCreationPopup.prototype._selectDropdownMenuItem = function(target) {
         domutil.find('.' + iconClassName, dropdownBtn).style.backgroundColor = bgColor;
         this._selectedCal = common.find(this.calendars, function(cal) {
             return cal.id === domutil.getData(selectedItem, 'calendarId');
+        });
+    }
+
+    // Show/hide fields as defined by selected calendar attributes
+    domutil.get('section-type').style = this._selectedCal.typeList ? show : hide;
+    domutil.get('section-title').style = this._selectedCal.useTitle ? show : hide;
+    domutil.get('section-location').style = this._selectedCal.useLocation ? show : hide;
+    domutil.get('section-state').style = this._selectedCal.useState ? show : hide;
+    domutil.get(cssPrefix + 'schedule-private').style = this._selectedCal.usePrivate ? show : hide;
+
+    // Remove old type list
+    typeListElementChildren.forEach(function(element) {
+        domutil.remove(element);
+    });
+
+    // Populate type list
+    if (this._selectedCal.typeList) {
+        // Populate first item
+        if (!domutil.get(cssPrefix + 'schedule-type').innerText || !this._selectedCal.typeList.includes(domutil.get(cssPrefix + 'schedule-type').innerText)) {
+            domutil.get('tui-full-calendar-schedule-type').innerText = this._selectedCal.typeList.find(Boolean);
+        }
+
+        this._selectedCal.typeList.forEach(function(typeOption) {
+            liElement = domutil.appendHTMLElement(
+                'li',
+                typeListElement,
+                cssPrefix + 'popup-section-item ' + cssPrefix + 'dropdown-menu-item'
+            );
+
+            domutil.setData(liElement, 'type', typeOption);
+            spanElement = domutil.appendHTMLElement(
+                'span',
+                liElement,
+                cssPrefix + 'content'
+            );
+            spanElement.innerText = typeOption;
+            spanElement.style = 'z-index:1010';
         });
     }
 
@@ -243,7 +292,7 @@ ScheduleCreationPopup.prototype._toggleIsPrivate = function(target) {
 ScheduleCreationPopup.prototype._onClickSaveSchedule = function(target) {
     var className = config.classname('popup-save');
     var cssPrefix = config.cssPrefix;
-    var title, isPrivate, location, isAllDay, startDate, endDate, state;
+    var title, type, isPrivate, location, isAllDay, startDate, endDate, state;
     var start, end, calendarId;
 
     if (!domutil.hasClass(target, className) && !domutil.closest(target, '.' + className)) {
@@ -251,10 +300,11 @@ ScheduleCreationPopup.prototype._onClickSaveSchedule = function(target) {
     }
 
     title = domutil.get(cssPrefix + 'schedule-title');
+    type = domutil.get(cssPrefix + 'schedule-type');
     startDate = new TZDate(this.rangePicker.getStartDate()).toLocalTime();
     endDate = new TZDate(this.rangePicker.getEndDate()).toLocalTime();
 
-    if (!title.value) {
+    if (!title.value && !type.innerText) {
         title.focus();
 
         return true;
@@ -286,6 +336,7 @@ ScheduleCreationPopup.prototype._onClickSaveSchedule = function(target) {
             schedule: {
                 calendarId: calendarId || this._schedule.calendarId,
                 title: title.value,
+                type: type.innerText,
                 location: location.value,
                 raw: {
                     class: isPrivate ? 'private' : 'public'
@@ -311,6 +362,7 @@ ScheduleCreationPopup.prototype._onClickSaveSchedule = function(target) {
         this.fire('beforeCreateSchedule', {
             calendarId: calendarId,
             title: title.value,
+            type: type.innerText,
             location: location.value,
             raw: {
                 class: isPrivate ? 'private' : 'public'
@@ -352,6 +404,7 @@ ScheduleCreationPopup.prototype.render = function(viewModel) {
         guideElements = this._getGuideElements(this.guide);
         boxElement = guideElements.length ? guideElements[0] : null;
     }
+
     layer.setContent(tmpl(viewModel));
     this._createDatepicker(viewModel.start, viewModel.end, viewModel.isAllDay);
     layer.show();
@@ -375,8 +428,8 @@ ScheduleCreationPopup.prototype._makeEditModeData = function(viewModel) {
     var title, isPrivate, location, startDate, endDate, isAllDay, state;
     var raw = schedule.raw || {};
     var calendars = this.calendars;
-
     var id = schedule.id;
+
     title = schedule.title;
     isPrivate = raw['class'] === 'private';
     location = schedule.location;
