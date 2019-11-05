@@ -174,8 +174,9 @@ ScheduleCreationPopup.prototype._selectDropdownMenuItem = function(target) {
     var bgColor, title, dropdown, dropdownBtn;
     var bgElement = domutil.find('.' + iconClassName, selectedItem);
     var titleElement = domutil.find('.' + contentClassName, selectedItem);
-    var show = 'display:inline-block';
-    var hide = 'display:none';
+    var show = 'inline-block';
+    var hide = 'none';
+    var extendWidth = '100%';
     var typeListElement = domutil.get('type-list');
     var typeListElementChildren = Array.from(typeListElement.children);
     var liElement;
@@ -200,11 +201,12 @@ ScheduleCreationPopup.prototype._selectDropdownMenuItem = function(target) {
     }
 
     // Show/hide fields as defined by selected calendar attributes
-    domutil.get('section-type').style = this._selectedCal.typeList ? show : hide;
-    domutil.get('section-title').style = this._selectedCal.useTitle ? show : hide;
-    domutil.get('section-location').style = this._selectedCal.useLocation ? show : hide;
-    domutil.get('section-state').style = this._selectedCal.useState ? show : hide;
-    domutil.get(cssPrefix + 'schedule-private').style = this._selectedCal.usePrivate ? show : hide;
+    domutil.get('section-type').style.display = this._selectedCal.typeList ? show : hide;
+    domutil.get('section-title').style.display = this._selectedCal.useTitle ? show : hide;
+    domutil.get('section-title').style.width = this._selectedCal.usePrivate ? '' : extendWidth;
+    domutil.get('section-location').style.display = this._selectedCal.useLocation ? show : hide;
+    domutil.get('section-state').style.display = this._selectedCal.useState ? show : hide;
+    domutil.get(cssPrefix + 'schedule-private').style.display = this._selectedCal.usePrivate ? show : hide;
 
     // Remove old type list
     typeListElementChildren.forEach(function(element) {

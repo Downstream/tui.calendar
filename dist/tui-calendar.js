@@ -1,6 +1,6 @@
 /*!
  * TOAST UI Calendar
- * @version 1.12.5 | Thu Oct 31 2019
+ * @version 1.12.5 | Tue Nov 05 2019
  * @author NHN FE Development Lab <dl_javascript@nhn.com>
  * @license MIT
  */
@@ -19454,8 +19454,9 @@ ScheduleCreationPopup.prototype._selectDropdownMenuItem = function(target) {
     var bgColor, title, dropdown, dropdownBtn;
     var bgElement = domutil.find('.' + iconClassName, selectedItem);
     var titleElement = domutil.find('.' + contentClassName, selectedItem);
-    var show = 'display:inline-block';
-    var hide = 'display:none';
+    var show = 'inline-block';
+    var hide = 'none';
+    var extendWidth = '100%';
     var typeListElement = domutil.get('type-list');
     var typeListElementChildren = Array.from(typeListElement.children);
     var liElement;
@@ -19480,11 +19481,12 @@ ScheduleCreationPopup.prototype._selectDropdownMenuItem = function(target) {
     }
 
     // Show/hide fields as defined by selected calendar attributes
-    domutil.get('section-type').style = this._selectedCal.typeList ? show : hide;
-    domutil.get('section-title').style = this._selectedCal.useTitle ? show : hide;
-    domutil.get('section-location').style = this._selectedCal.useLocation ? show : hide;
-    domutil.get('section-state').style = this._selectedCal.useState ? show : hide;
-    domutil.get(cssPrefix + 'schedule-private').style = this._selectedCal.usePrivate ? show : hide;
+    domutil.get('section-type').style.display = this._selectedCal.typeList ? show : hide;
+    domutil.get('section-title').style.width = this._selectedCal.usePrivate ? '' : extendWidth;
+    domutil.get('section-title').style.display = this._selectedCal.useTitle ? show : hide;
+    domutil.get('section-location').style.display = this._selectedCal.useLocation ? show : hide;
+    domutil.get('section-state').style.display = this._selectedCal.useState ? show : hide;
+    domutil.get(cssPrefix + 'schedule-private').style.display = this._selectedCal.usePrivate ? show : hide;
 
     // Remove old type list
     typeListElementChildren.forEach(function(element) {
@@ -21545,7 +21547,9 @@ module.exports = (Handlebars['default'] || Handlebars).template({"1":function(co
     + alias4(((helper = (helper = helpers.CSS_PREFIX || (depth0 != null ? depth0.CSS_PREFIX : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"CSS_PREFIX","hash":{},"data":data}) : helper)))
     + "popup-section-item "
     + alias4(((helper = (helper = helpers.CSS_PREFIX || (depth0 != null ? depth0.CSS_PREFIX : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"CSS_PREFIX","hash":{},"data":data}) : helper)))
-    + "section-title\">\r\n                <span class=\""
+    + "section-title\"\r\n                 style=\""
+    + ((stack1 = helpers.unless.call(alias1,((stack1 = (depth0 != null ? depth0.selectedCal : depth0)) != null ? stack1.useTitle : stack1),{"name":"unless","hash":{},"fn":container.program(5, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "\">\r\n                <span class=\""
     + alias4(((helper = (helper = helpers.CSS_PREFIX || (depth0 != null ? depth0.CSS_PREFIX : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"CSS_PREFIX","hash":{},"data":data}) : helper)))
     + "icon "
     + alias4(((helper = (helper = helpers.CSS_PREFIX || (depth0 != null ? depth0.CSS_PREFIX : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"CSS_PREFIX","hash":{},"data":data}) : helper)))
@@ -21565,6 +21569,8 @@ module.exports = (Handlebars['default'] || Handlebars).template({"1":function(co
     + alias4(((helper = (helper = helpers.CSS_PREFIX || (depth0 != null ? depth0.CSS_PREFIX : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"CSS_PREFIX","hash":{},"data":data}) : helper)))
     + "section-private"
     + ((stack1 = helpers.unless.call(alias1,(depth0 != null ? depth0.isPrivate : depth0),{"name":"unless","hash":{},"fn":container.program(7, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "\"\r\n                    style=\""
+    + ((stack1 = helpers.unless.call(alias1,((stack1 = (depth0 != null ? depth0.selectedCal : depth0)) != null ? stack1.usePrivate : stack1),{"name":"unless","hash":{},"fn":container.program(5, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + "\">\r\n                <span class=\""
     + alias4(((helper = (helper = helpers.CSS_PREFIX || (depth0 != null ? depth0.CSS_PREFIX : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"CSS_PREFIX","hash":{},"data":data}) : helper)))
     + "icon "

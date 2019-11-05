@@ -37,14 +37,16 @@
         <div id="section-title"
              class="{{CSS_PREFIX}}popup-section"
              style="{{#unless selectedCal.useTitle}} display:none{{/unless}}">
-            <div class="{{CSS_PREFIX}}popup-section-item {{CSS_PREFIX}}section-title">
+            <div class="{{CSS_PREFIX}}popup-section-item {{CSS_PREFIX}}section-title"
+                 style="{{#unless selectedCal.useTitle}} display:none{{/unless}}">
                 <span class="{{CSS_PREFIX}}icon {{CSS_PREFIX}}ic-title"></span>
                 <input id="{{CSS_PREFIX}}schedule-title" class="{{CSS_PREFIX}}content"
                        placeholder="{{titlePlaceholder-tmpl}}" value="{{title}}"></span>
             </div>
             <button id="{{CSS_PREFIX}}schedule-private"
                     class="{{CSS_PREFIX}}button {{CSS_PREFIX}}section-private{{#unless
-                            isPrivate}} {{CSS_PREFIX}}public{{/unless}}">
+                            isPrivate}} {{CSS_PREFIX}}public{{/unless}}"
+                    style="{{#unless selectedCal.usePrivate}} display:none{{/unless}}">
                 <span class="{{CSS_PREFIX}}icon {{CSS_PREFIX}}ic-private"></span>
             </button>
         </div>
