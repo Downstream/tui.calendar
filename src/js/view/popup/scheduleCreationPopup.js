@@ -306,12 +306,6 @@ ScheduleCreationPopup.prototype._onClickSaveSchedule = function(target) {
     startDate = new TZDate(this.rangePicker.getStartDate()).toLocalTime();
     endDate = new TZDate(this.rangePicker.getEndDate()).toLocalTime();
 
-    if (!title.value && !type.innerText) {
-        title.focus();
-
-        return true;
-    }
-
     if (!startDate && !endDate) {
         return true;
     }

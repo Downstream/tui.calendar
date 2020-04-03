@@ -204,7 +204,7 @@ function Schedule() {
  **********/
 
 Schedule.schema = {
-    required: ['title'],
+    required: [],
     dateRange: ['start', 'end']
 };
 
