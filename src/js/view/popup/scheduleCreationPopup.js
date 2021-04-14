@@ -178,7 +178,6 @@ ScheduleCreationPopup.prototype._selectDropdownMenuItem = function(target) {
     var hide = 'none';
     var extendWidth = '100%';
     var typeListElement = domutil.get('type-list');
-    var typeListElementChildren = Array.from(typeListElement.children);
     var liElement;
     var spanElement;
 
@@ -209,7 +208,8 @@ ScheduleCreationPopup.prototype._selectDropdownMenuItem = function(target) {
     domutil.get(cssPrefix + 'schedule-private').style.display = this._selectedCal.usePrivate ? show : hide;
 
     // Remove old type list
-    typeListElementChildren.forEach(function(element) {
+    if (typeListElement && typeListElement.children)
+    Array.from(typeListElement.children).forEach(function(element) {
         domutil.remove(element);
     });
 
